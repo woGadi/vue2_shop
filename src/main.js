@@ -8,6 +8,9 @@ import './assets/fonts/iconfont.css'
 // 导入全局样式表
 import './assets/css/global.css'
 
+import { interceptorAPI } from '@/api/authorizationAPI.js'
+interceptorAPI()
+
 Vue.config.productionTip = false
 
 new Vue({

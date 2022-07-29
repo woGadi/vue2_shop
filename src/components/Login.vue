@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { postLoginFormAPI } from '@/api/loginAPI.js'
+import { postLoginFormAPI } from '@/api/loginAPI/loginAPI.js'
 export default {
   /*eslint-disable*/
   name: 'Login',
