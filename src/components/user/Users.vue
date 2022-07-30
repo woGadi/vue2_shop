@@ -43,7 +43,7 @@
             <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeUserById(scope.row.id)"></el-button>
             <!-- 分配角色按钮 -->
             <el-tooltip effect="dark" content="分配角色" placement="top" :enterable="false">
-              <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+              <el-button type="warning" icon="el-icon-setting" size="mini" @click="setRole(scope.row)"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -105,6 +105,27 @@
         <el-button type="primary" @click="editUser">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!-- 分配角色的对话框 -->
+    <el-dialog title="分配角色" :visible.sync="setRoleDialogVisible" width="50%" @close="setRoleDialogClosed">
+      <div>
+        <p>当前的用户：{{ userInfo.username }}</p>
+        <p>当前的角色：{{ userInfo.role_name }}</p>
+        <p>
+          分配新角色：
+          <!-- 通过 label 指定下拉所展示的那些名称 -->
+          <!-- 通过 value 指定下拉菜单所选项的真正的那个值 -->
+          <!-- 何谓真正的值？如：某一项展示的是文本，而真正操作的数据是文本的 id 值 -->
+          <el-select v-model="selectedRoleId" placeholder="请选择">
+            <el-option v-for="item in rolesList" :key="item.id" :label="item.roleName" :value="item.id"> </el-option>
+          </el-select>
+        </p>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRoleDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="saveRoleInfo">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -115,6 +136,8 @@ import { addUserAPI } from '@/api/userAPI/users_addAPI.js'
 import { queryUsersAPI } from '@/api/userAPI/users_queryAPI.js'
 import { editUserAPI } from '@/api/userAPI/users_editAPI.js'
 import { deleteUserAPI } from '@/api/userAPI/users_deleteAPI.js'
+import { getRolesListAPI } from '@/api/powerAPI/rolesAPI.js'
+import { setUserRoleAPI } from '@/api/userAPI/users_roleAPI.js'
 export default {
   /*eslint-disable*/
   name: 'Users',
@@ -193,7 +216,15 @@ export default {
           { required: true, message: '请输入手机号', trigger: 'blur' },
           { validator: checkMobile, trigger: 'blur' }
         ]
-      }
+      },
+      // 控制分配角色对话框的显示与隐藏
+      setRoleDialogVisible: false,
+      // 需要被分配角色的用户信息
+      userInfo: {},
+      // 所有角色的数据列表
+      rolesList: [],
+      // 已选中的角色 id 值
+      selectedRoleId: ''
     }
   },
   methods: {
@@ -203,7 +234,7 @@ export default {
       if (res.meta.status !== 200) return this.$message.error('获取用户列表失败')
       this.userlist = res.data.users
       this.total = res.data.total
-      console.log(res)
+      // console.log(res)
     },
     // 监听页面大小改变的事件
     handleSizeChange(newSize) {
@@ -290,6 +321,41 @@ export default {
       this.$message.success('删除用户成功~')
       // 改动了用户列表数据，需要更新一下数据
       this.getUserList()
+    },
+    // 展示分配角色的对话框
+    async setRole(userInfo) {
+      // 在弹出对话框之前，获取当前用户的用户信息
+      this.userInfo = userInfo
+
+      // 在弹出对话框之前，获取所有角色的列表
+      const { data: res } = await getRolesListAPI()
+      if (res.meta.status !== 200) return this.$message.error('获取角色列表失败了喔')
+
+      this.rolesList = res.data
+      console.log(this.rolesList)
+
+      this.setRoleDialogVisible = true
+    },
+    // 点击分配角色的确定按钮之后，将分配的角色信息存到服务器中
+    async saveRoleInfo() {
+      // 若已选中的角色 id 值为空字符串，说明用户还未选择分配的角色
+      if (!this.selectedRoleId) return this.$message.error('请选择要分配的角色喔')
+
+      const { data: res } = await setUserRoleAPI(this.userInfo.id, this.selectedRoleId)
+
+      if (res.meta.status !== 200) return this.$message.error('分配角色失败了喔')
+
+      this.$message.success('分配角色成功~')
+      this.getUserList()
+      this.setRoleDialogVisible = false
+    },
+    // 监听分配角色对话框的关闭事件
+    setRoleDialogClosed() {
+      // 让下拉菜单里的 value 重置为空字符串
+      this.selectedRoleId = ''
+      // 重置需要被分配角色的用户信息
+      // 疑惑：若不重置这里有何影响？？
+      this.userInfo = {}
     }
   },
   created() {

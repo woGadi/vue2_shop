@@ -83,7 +83,7 @@ export default {
       const { data: res } = await getMenuListAPI()
       if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
       this.menulist = res.data
-      console.log(this.menulist)
+      // console.log(this.menulist)
     },
     // 侧边栏顶部的按钮，控制菜单展示效果
     toggleCollapse() {
