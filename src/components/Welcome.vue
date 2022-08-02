@@ -1,5 +1,7 @@
 <template>
-  <div>欢迎</div>
+  <div>
+    <h1>欢迎，我的朋友！</h1>
+  </div>
 </template>
 
 <script>

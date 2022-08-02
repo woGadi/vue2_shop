@@ -172,7 +172,7 @@ export default {
         // 当前的页数
         pagenum: 1,
         // 当前每页显示多少条数据
-        pagesize: 2
+        pagesize: 5
       },
       userlist: [],
       // 用户数据总条目
