@@ -32,9 +32,9 @@
           <el-tag type="warning" size="mini" v-else>三级</el-tag>
         </template>
         <!-- 操作 -->
-        <template slot="opt">
-          <el-button type="primary" icon="el-icon-edit" size="mini">编辑</el-button>
-          <el-button type="danger" icon="el-icon-delete" size="mini">删除</el-button>
+        <template slot="opt" slot-scope="scope">
+          <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditCateDialog(scope.row)">编辑</el-button>
+          <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteCate(scope.row)">删除</el-button>
         </template>
       </tree-table>
 
@@ -62,6 +62,20 @@
         <el-button type="primary" @click="addCate">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!-- 编辑分类的对话框 -->
+    <el-dialog title="编辑分类" :visible.sync="editCateDialogVisible" width="50%" @close="editCateDialogClosed">
+      <!-- 编辑分类的表单 -->
+      <el-form :model="editCateForm" :rules="editCateFormRules" ref="editCateFormRef" label-width="100px">
+        <el-form-item label="分类名称：" prop="cat_name">
+          <el-input v-model="editCateForm.cat_name"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editCateDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editCate">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -69,6 +83,9 @@
 import { getCateListAPI } from '@/api/goodsAPI/goods_cateAPI.js'
 import { getParentCateListAPI } from '@/api/goodsAPI/goods_parent_cateAPI'
 import { addCateAPI } from '@/api/goodsAPI/goods_add_cateAPI.js'
+import { queryGoodsCateAPI } from '@/api/goodsAPI/goods_cate_queryAPI.js'
+import { editCateAPI } from '@/api/goodsAPI/goods_cate_editAPI.js'
+import { deleteCateAPI } from '@/api/goodsAPI/goods_cate_deleteAPI.js'
 export default {
   /*eslint-disable*/
   name: 'Cate',
@@ -135,7 +152,15 @@ export default {
         children: 'children'
       },
       // 选中的父级分类的 id 数组
-      selectedKsys: []
+      selectedKsys: [],
+      // 控制编辑分类对话框的显示与隐藏
+      editCateDialogVisible: false,
+      // 修改分类的表单数据对象
+      editCateForm: {},
+      // 修改分类表单的校验规则对象
+      editCateFormRules: {
+        cat_name: [{ required: true, message: '请输入分类名称', trigger: 'blur' }]
+      }
     }
   },
   created() {
@@ -212,6 +237,50 @@ export default {
       this.selectedKsys = []
       this.addCateForm.cat_level = 0
       this.addCateForm.cat_pid = 0
+    },
+    // 监听编辑分类对话框的展示
+    async showEditCateDialog(row) {
+      const { data: res } = await queryGoodsCateAPI(row.cat_id)
+
+      if (res.meta.status !== 200) return this.$message.error('查询商品分类失败了喔')
+
+      this.editCateForm = res.data
+      // console.log(this.editCateForm)
+      this.editCateDialogVisible = true
+    },
+    // 监听编辑分类对话框的关闭
+    editCateDialogClosed() {
+      this.$refs.editCateFormRef.resetFields()
+    },
+    // 编辑提交分类
+    editCate() {
+      this.$refs.editCateFormRef.validate(async (valid) => {
+        if (!valid) return
+        const { data: res } = await editCateAPI(this.editCateForm.cat_id, this.editCateForm.cat_name)
+
+        if (res.meta.status !== 200) return this.$message.error('编辑分类失败了喔')
+
+        this.getCateList()
+        this.$message.success('编辑分类成功~')
+        this.editCateDialogVisible = false
+      })
+    },
+    // 根据 id 删除分类
+    async deleteCate(row) {
+      const confirmResult = await this.$confirm('此操作将永久删除该分类, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch((err) => err)
+
+      if (confirmResult === 'confirm') {
+        const { data: res } = await deleteCateAPI(row.cat_id)
+
+        if (res.meta.status !== 200) return this.$message.error('删除分类失败了喔')
+
+        this.getCateList()
+        this.$message.success('删除分类成功~')
+      }
     }
   }
 }

@@ -21,7 +21,6 @@ import * as echarts from 'echarts'
 import { getReportDataAPI } from '@/api/reportAPI/report_dataAPI.js'
 import _ from 'lodash'
 export default {
-  /*eslint-disable*/
   name: 'Report',
   data() {
     return {

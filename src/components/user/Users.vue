@@ -17,7 +17,7 @@
           </el-input>
         </el-col>
         <el-col :span="4">
-          <el-button type="primary" @click="addDialogVisible = true">添加用户</el-button>
+          <el-button type="primary" @click="showAddDialog">添加用户</el-button>
         </el-col>
       </el-row>
 
@@ -68,7 +68,7 @@
       <!-- 内容主体区域 -->
       <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="70px">
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="addForm.username"></el-input>
+          <el-input v-model="addForm.username" ref="usernameFocusRef"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
           <el-input v-model="addForm.password"></el-input>
@@ -94,7 +94,7 @@
           <el-input v-model="editForm.username" disabled></el-input>
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
-          <el-input v-model="editForm.email"></el-input>
+          <el-input v-model="editForm.email" ref="emailFocusRef"></el-input>
         </el-form-item>
         <el-form-item label="手机" prop="mobile">
           <el-input v-model="editForm.mobile"></el-input>
@@ -139,7 +139,6 @@ import { deleteUserAPI } from '@/api/userAPI/users_deleteAPI.js'
 import { getRolesListAPI } from '@/api/powerAPI/rolesAPI.js'
 import { setUserRoleAPI } from '@/api/userAPI/users_roleAPI.js'
 export default {
-  /*eslint-disable*/
   name: 'Users',
   data() {
     // 验证邮箱的规则
@@ -217,6 +216,8 @@ export default {
           { validator: checkMobile, trigger: 'blur' }
         ]
       },
+      // 修改对话框里展示的原值 (用于:无修改则不请求)
+      editDialogShowingValue: {},
       // 控制分配角色对话框的显示与隐藏
       setRoleDialogVisible: false,
       // 需要被分配角色的用户信息
@@ -256,6 +257,12 @@ export default {
       }
       this.$message.success('更新用户状态成功~')
     },
+    // 监听添加用户对话框的展示
+    showAddDialog() {
+      this.addDialogVisible = true
+      // 获取输入框焦点
+      this.$nextTick((_) => this.$refs.usernameFocusRef.$refs.input.focus())
+    },
     // 监听添加用户对话框的关闭事件
     addDialogClosed() {
       this.$refs.addFormRef.resetFields()
@@ -281,9 +288,14 @@ export default {
       const { data: res } = await queryUsersAPI(id)
       if (res.meta.status !== 200) return this.$message.error('查询用户信息失败了喔')
 
+      this.editDialogShowingValue.email = res.data.email
+      this.editDialogShowingValue.mobile = res.data.mobile
+
       // 将查询到的数据存到 data() 中
       this.editForm = res.data
       this.editDialogVisible = true
+      // 获取输入框焦点
+      this.$nextTick((_) => this.$refs.emailFocusRef.$refs.input.focus())
     },
     // 监听修改用户对话框的关闭事件
     editDialogClosed() {
@@ -293,6 +305,11 @@ export default {
     editUser() {
       this.$refs.editFormRef.validate(async (valid) => {
         if (!valid) return
+
+        if (this.editDialogShowingValue.email === this.editForm.email && this.editDialogShowingValue.mobile === this.editForm.mobile) {
+          this.editDialogVisible = false
+          return this.$message.info('您未修改任何信息呢')
+        }
 
         // 发起添加用户的网络请求
         const { data: res } = await editUserAPI(this.editForm.id, this.editForm.email, this.editForm.mobile)

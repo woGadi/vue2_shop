@@ -6,7 +6,6 @@
 
 <script>
 export default {
-  /*eslint-disable*/
   name: 'Welcome'
 }
 </script>

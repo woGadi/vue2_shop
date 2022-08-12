@@ -18,8 +18,11 @@ import 'quill/dist/quill.core.css' // import styles
 import 'quill/dist/quill.snow.css' // for snow theme
 import 'quill/dist/quill.bubble.css' // for bubble theme
 
-import { interceptorAPI } from '@/api/authorizationAPI.js'
-interceptorAPI()
+// 导入 request 和 response 拦截器
+// nprogress 包也导入在里面
+import { reqInterceptorAPI, resInterceptorAPI } from '@/api/authorizationAPI.js'
+reqInterceptorAPI()
+resInterceptorAPI()
 
 Vue.config.productionTip = false
 

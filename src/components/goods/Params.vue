@@ -245,9 +245,9 @@ export default {
       this.getParamsData()
     },
     // 点击修改按钮，展示修改的对话框
-    async showEditDialog(attr_id) {
+    async showEditDialog(attrId) {
       // 查询将要修改项的参数信息
-      const { data: res } = await queryParamsAPI(this.selectCateId, attr_id, this.activeName)
+      const { data: res } = await queryParamsAPI(this.selectCateId, attrId, this.activeName)
 
       if (res.meta.status !== 200) return this.$message.error('获取查询的参数信息失败了喔')
 
@@ -287,7 +287,7 @@ export default {
       this.editDialogVisible = false
     },
     // 根据 id 删除对应的参数项
-    async removeParams(attr_id) {
+    async removeParams(attrId) {
       const confirmResult = await this.$confirm(`此操作将永久删除该${this.titleText.slice(2, 4)}, 是否继续?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -296,7 +296,7 @@ export default {
       console.log(confirmResult)
 
       if (confirmResult === 'confirm') {
-        const { data: res } = await removeParamsAPI(this.selectCateId, attr_id)
+        const { data: res } = await removeParamsAPI(this.selectCateId, attrId)
 
         if (res.meta.status !== 200) return this.$message.error(`删除${this.titleText.slice(2, 4)}失败了喔`)
 

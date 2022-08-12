@@ -28,7 +28,6 @@
 <script>
 import { getRightsListAPI } from '@/api/powerAPI/rightsAPI.js'
 export default {
-  /*eslint-disable*/
   name: 'Rights',
   data() {
     return {

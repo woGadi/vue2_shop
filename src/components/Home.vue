@@ -53,7 +53,6 @@
 <script>
 import { getMenuListAPI } from '@/api/menuAPI/menuAPI.js'
 export default {
-  /*eslint-disable*/
   name: 'Home',
   data() {
     return {

@@ -96,7 +96,7 @@ import { getCateParamsAPI } from '@/api/goodsAPI/goods_cate_paramsAPI.js'
 import _ from 'lodash'
 import { addAPI } from '@/api/goodsAPI/goods_addAPI.js'
 export default {
-  /* eslint-disable */
+  /*eslint-disable*/
   name: 'Add',
   data() {
     return {

@@ -28,14 +28,13 @@
 <script>
 import { postLoginFormAPI } from '@/api/loginAPI/loginAPI.js'
 export default {
-  /*eslint-disable*/
   name: 'Login',
   data() {
     return {
       // 这是登录表单的数据绑定对象
       loginForm: {
-        username: 'admin',
-        password: '123456'
+        username: '', // admin
+        password: '' // 123456
       },
       // 这是表单的验证规则对象
       loginFormRules: {

@@ -9,10 +9,11 @@
 
     <!-- 卡片视图区域 -->
     <el-card>
+      <!-- 搜索区域 -->
       <el-row>
         <el-col :span="8">
-          <el-input placeholder="请输入内容">
-            <el-button slot="append" icon="el-icon-search"></el-button>
+          <el-input placeholder="请输入内容" v-model="queryInfo.query" clearable @clear="getOrderList">
+            <el-button slot="append" icon="el-icon-search" @click="getOrderList"></el-button>
           </el-input>
         </el-col>
       </el-row>
@@ -84,7 +85,6 @@ import cityData from '@/assets/citydata.js'
 // 用导入写shi的文档物流数据，来代替接口
 import resData from '@/api/orderAPI/order_jia_data.js'
 export default {
-  /*eslint-disable*/
   name: 'Order',
   data() {
     return {
