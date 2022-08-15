@@ -3,10 +3,10 @@
     <!-- 头部区域 -->
     <el-header>
       <div class="title">
-        <img src="../assets/heima.png" alt="" />
+        <img src="../assets/avatar.jpg" alt="" />
         <p>电商后台管理系统</p>
       </div>
-      <el-button type="info" @click="logout">退出</el-button>
+      <el-button class="logout" type="info" @click="logout">退出</el-button>
     </el-header>
     <!-- 页面主体区域 -->
     <el-container>
@@ -19,7 +19,8 @@
         <!-- 是否开启折叠动画：collapse-transition -->
         <!-- 是否水平折叠收起菜单：collapse -->
         <!-- 是否只保持一个子菜单的展开：unique-opened -->
-        <el-menu background-color="#313743" text-color="#fff" active-text-color="#409EFF" unique-opened :collapse="isCollapse" :collapse-transition="false" router :default-active="activePath">
+        <!-- el-menu 行内的原背景：background-color="#313743" -->
+        <el-menu background-color="#113965" text-color="#fff" active-text-color="#409EFF" unique-opened :collapse="isCollapse" :collapse-transition="false" router :default-active="activePath">
           <!-- 一级菜单 -->
           <el-submenu :index="item.id + ''" v-for="item in menulist" :key="item.id">
             <!-- 一级菜单的模板区域 -->
@@ -108,12 +109,20 @@ export default {
 .el-header {
   display: flex;
   padding-left: 0;
-  background-color: #363d40;
+  // background-color: #363d40;
+  background-color: #0063b1;
   justify-content: space-between;
+  .logout {
+    background-color: #113965;
+    border: none;
+  }
 }
 .title {
   display: flex;
   width: 250px;
+  img {
+    border-radius: 50%;
+  }
   p {
     margin-left: 15px;
     color: #fff;
@@ -124,10 +133,12 @@ export default {
   margin: 10px 0;
 }
 .el-aside {
-  background-color: #313743;
+  // background-color: #313743;
+  background-color: #113965;
   .toggle-button {
     height: 30px;
-    background-color: #4a5064;
+    // background-color: #4a5064;
+    background-color: #303432;
     color: #fff;
     font-size: 16px;
     line-height: 30px;
